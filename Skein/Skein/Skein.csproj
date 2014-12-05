@@ -43,7 +43,9 @@
     <Compile Include="Exception\JsonException.cs" />
     <Compile Include="Exception\JsonParseException.cs" />
     <Compile Include="JsonReader.cs" />
-    <Compile Include="Models\JsonValue.cs" />
+    <Compile Include="Models\JsonObject.cs" />
+    <Compile Include="Parser\JsonObjectParser.cs" />
+    <Compile Include="Parser\Util.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

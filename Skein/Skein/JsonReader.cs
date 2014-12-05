@@ -21,7 +21,7 @@ namespace Skein
             End
         }
 
-        public static JsonValue Parse(string json)
+        public static JsonObject Parse(string json)
         {
             if (string.IsNullOrEmpty(json))
                 throw new JsonParseException("Input is null!!");
@@ -30,6 +30,8 @@ namespace Skein
                 throw new JsonParseException("Input is empty!!");
 
             // TODO Parsing
+            Parser.JsonObjectParser objectParser = new Parser.JsonObjectParser();
+            objectParser.Parse(json);
 
             Debug.WriteLine("Parse success!!!");
 
