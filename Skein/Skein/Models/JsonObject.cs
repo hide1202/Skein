@@ -20,6 +20,11 @@ namespace Skein
         public JsonObject this[int index] { get { return _data[index]; } }
         #endregion
 
+        public void SetValue(object data)
+        {
+            _value = data;
+        }
+
         public void Append(string name, JsonObject data)
         {
             if (!TryAppend(name, data))
@@ -43,5 +48,11 @@ namespace Skein
             return (T)data._value;
         }
         #endregion
+
+        public override string ToString()
+        {
+            string @value = _value is string ? (string)_value : "null";
+            return string.Format("value:{0}, dictionary:{1}", @value, _data);
+        }
     }
 }
