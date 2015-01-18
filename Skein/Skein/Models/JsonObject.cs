@@ -25,13 +25,19 @@ namespace Skein
             _value = data;
         }
 
-        public void Append(string name, JsonObject data)
+        public void SetValue(JsonType type, object data)
+        {
+            DataType = type;
+            _value = data;
+        }
+
+        public void Append(object name, JsonObject data)
         {
             if (!TryAppend(name, data))
                 throw new JsonException(string.Format("Already this object contains \{name}"));
         }
 
-        public bool TryAppend(string name, JsonObject data)
+        public bool TryAppend(object name, JsonObject data)
         {
             if (_data.ContainsKey(name))    return false;
             _data.Add(name, data);          return true;
@@ -49,10 +55,13 @@ namespace Skein
         }
         #endregion
 
-        public override string ToString()
+        public string ToLogString()
         {
-            string @value = _value is string ? (string)_value : "null";
-            return string.Format("value:{0}, dictionary:{1}", @value, _data);
+            string @value = _value != null ? _value.ToString() : "null";
+            string @data = string.Empty;
+            if (_data != null && _data.Count >= 0)
+                @data = _data.ToLog();
+            return string.Format("value:{0}, dictionary:{1}", @value, @data);
         }
     }
 }

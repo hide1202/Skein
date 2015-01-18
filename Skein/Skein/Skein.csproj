@@ -42,6 +42,7 @@
     <Compile Include="Enum\JsonType.cs" />
     <Compile Include="Exception\JsonException.cs" />
     <Compile Include="Exception\JsonParseException.cs" />
+    <Compile Include="Extension.cs" />
     <Compile Include="JsonReader.cs" />
     <Compile Include="Models\JsonObject.cs" />
     <Compile Include="Parser\JsonObjectParser.cs" />

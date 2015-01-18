@@ -12,8 +12,8 @@ namespace Skein
             if (json.Trim() == string.Empty)
                 throw new JsonParseException("Input is empty!!");
 
-            Parser.JsonObjectParser objectParser = new Parser.JsonObjectParser();
-            JsonObject result = objectParser.Parse(json);
+            Parser.JsonObjectParser objectParser = new Parser.JsonObjectParser(json);
+            JsonObject result = objectParser.Parse();
             return result;
         }
     }
