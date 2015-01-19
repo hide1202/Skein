@@ -16,15 +16,19 @@ namespace Skein.Parser
             return _position >= 0 && _position < _json.Length;
         }
 
-        private void SkipPassableToken()
+        private char? NextToken()
         {
-            if (!IsValidPosition()) return;
-
-            while (Util.IsPassableToken(_json[_position]))
+            while (true)
             {
                 if (!IsValidPosition()) break;
+
+                if (!Util.IsPassableToken(_json[_position]))
+                    return _json[_position++];
+
                 _position++;
             }
+
+            return null;
         }
 
         internal JsonObjectParser(string json) { _json = json; Clear(); }
@@ -44,10 +48,8 @@ namespace Skein.Parser
 
         private JsonObject ParseValue()
         {
-            SkipPassableToken();
-
             // Check the start character.
-            JsonType jsonType = GetJsonType(_json[_position]);
+            JsonType jsonType = GetJsonType(NextToken());
 
             switch (jsonType)
             {
@@ -56,6 +58,7 @@ namespace Skein.Parser
                 case JsonType.String:
                     return ParseStringValue();
                 case JsonType.Integer:
+                    _position--;
                     return ParseNumberValue();
                 case JsonType.Array:
                     return ParseArray();
@@ -66,28 +69,27 @@ namespace Skein.Parser
 
         private JsonObject ParseObject()
         {
-            if (_json[_position++] != Token.ObjectStart)
-                throw new JsonParseException("Object must start '{'!!!");
+            //if (_json[_position++] != Token.ObjectStart)
+            //    throw new JsonParseException("Object must start '{'!!!");
 
             JsonObject result = new JsonObject();
             result.DataType = JsonType.Object;
 
             do
             {
+                NextToken();
                 string name = ParseString();
-                SkipPassableToken();
 
-                if (_json[_position++] != Token.Delimiter)
+                if (NextToken() != Token.Delimiter)
                     throw new JsonParseException("Delimiter must ':'!!!");
 
                 result.Append(name, ParseValue());
-                SkipPassableToken();
 
                 if (_json[_position] != ',') break;
                 else _position++;
             } while (true);
 
-            if(_json[_position++] != Token.ObjectEnd)
+            if(NextToken() != Token.ObjectEnd)
                 throw new JsonParseException("Object must end '}'!!!");
 
             return result;
@@ -95,8 +97,6 @@ namespace Skein.Parser
 
         private JsonObject ParseStringValue()
         {
-            SkipPassableToken();
-
             JsonObject result = new JsonObject();
             result.DataType = JsonType.String;
 
@@ -107,8 +107,6 @@ namespace Skein.Parser
 
         private JsonObject ParseNumberValue()
         {
-            SkipPassableToken();
-
             JsonObject result = new JsonObject();            
 
             int startPos = _position;
@@ -137,15 +135,15 @@ namespace Skein.Parser
         }
 
         private string ParseString()
-        {
-            SkipPassableToken();
-
-            if (_json[_position++] != Token.DoubleQuote)
-                throw new JsonParseException("String must start '\"'!!!");
-            
+        {            
             int nameStart = _position;
 
-            try { while (_json[_position++] != Token.DoubleQuote) ; }
+            try
+            {
+                char? token = null;
+                do { token = NextToken(); }
+                while (token.HasValue && token != Token.DoubleQuote);
+            }
             catch (IndexOutOfRangeException) { throw new JsonParseException("String must end \""); }
 
             return _json.Substring(nameStart, (_position - nameStart - 1));
@@ -153,18 +151,12 @@ namespace Skein.Parser
 
         private JsonObject ParseArray()
         {
-            SkipPassableToken();
-
-            if(_json[_position++] != Token.ArrayStart)
-                throw new JsonParseException("Array must start '['!!!");
-
             JsonObject result = new JsonObject();
             result.DataType = JsonType.Array;
             int index = 0;
             do
             {                
                 result.Append(index++, ParseValue());
-                SkipPassableToken();
 
                 if (_json[_position] != Token.Comma || _json[_position] == Token.ArrayEnd)
                 {
@@ -176,14 +168,15 @@ namespace Skein.Parser
 
             } while (true);
 
-            SkipPassableToken();
-
             return result;
         }
 
-        private JsonType GetJsonType(char startToken)
+        private JsonType GetJsonType(char? startToken)
         {
-            if (char.IsNumber(startToken) || startToken == Token.Minus)
+            if (startToken == null)
+                throw new JsonParseException("Token is invalid!!");
+
+            if (char.IsNumber(startToken.Value) || startToken == Token.Minus)
                 return JsonType.Integer;
 
             switch (startToken)
