@@ -26,7 +26,7 @@ namespace SkeinUnitTest
         };
 
         private string[] _invalidCase = new string[] {
-            //@"{""key"":""1234}",
+            @"{""key"":""1234}",
         };
 
         [TestMethod]
@@ -42,15 +42,16 @@ namespace SkeinUnitTest
                     Assert.Fail(e.Message);
                 }
 
-            //foreach (var testCase in _invalidCase)
-            //    try
-            //    {
-            //        ParseTest(testCase);
-            //        Assert.Fail("Success to parse invalid case");
-            //    }
-            //    catch (System.Exception e) {
-            //        Debug.WriteLine(e.Message);
-            //    }
+            foreach (var testCase in _invalidCase)
+                try
+                {
+                    ParseTest(testCase);
+                    Assert.Fail("Success to parse invalid case");
+                }
+                catch (System.Exception e)
+                {
+                    Debug.WriteLine(e.Message);
+                }
 
         }
 

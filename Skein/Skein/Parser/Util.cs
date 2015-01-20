@@ -1,4 +1,5 @@
-﻿namespace Skein.Parser
+﻿
+namespace Skein.Parser
 {
     public static class Util
     {
@@ -27,5 +28,8 @@
 
         internal const char Delimiter = ':';
         internal const char Minus = '-';
+
+        private const string NumberEnd = " ,]}";
+        internal static bool IsNumberEnd(char token) { return NumberEnd.Contains(token.ToString()); }
     }    
 }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Skein
 {
@@ -21,6 +18,18 @@ namespace Skein
             }
             builder.Append("}");
             return builder.ToString();
+        }
+
+        /// <summary>
+        /// int value contains min value, except for max value.
+        /// </summary>
+        /// <param name="thisInt"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        internal static bool IsBetween(this int thisInt, int min, int max)
+        {
+            return thisInt >= min && thisInt < max;
         }
     }
 }

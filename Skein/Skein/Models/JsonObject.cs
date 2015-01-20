@@ -12,6 +12,7 @@ namespace Skein
         #endregion
 
         public JsonObject() { _data = new Dictionary<object, JsonObject>(); }
+        public JsonObject(JsonType dataType) : this() { DataType = dataType; }
 
         public JsonType DataType { get; set; } = JsonType.Null;
 
@@ -56,12 +57,23 @@ namespace Skein
         #endregion
 
         public string ToLogString()
-        {
-            string @value = _value != null ? _value.ToString() : "null";
-            string @data = string.Empty;
-            if (_data != null && _data.Count >= 0)
-                @data = _data.ToLog();
-            return string.Format("value:{0}, dictionary:{1}", @value, @data);
+        {            
+            System.Text.StringBuilder log = new System.Text.StringBuilder();
+            if (_value != null)
+            {
+                log.Append("(v:");
+                log.Append(_value != null ? _value.ToString() : "null");
+                log.Append(")");
+            }
+
+            if (_data != null && _data.Count > 0)
+            {
+                log.Append("(d:");
+                log.Append(_data.ToLog());
+                log.Append(")");
+            }
+
+            return log.ToString();
         }
     }
 }

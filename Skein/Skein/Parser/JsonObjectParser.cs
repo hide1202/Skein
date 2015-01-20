@@ -9,41 +9,32 @@ namespace Skein.Parser
     {
         private string _json = string.Empty;
         private int _position = 0;
-        private StringBuilder _nameBuilder;
 
-        private bool IsValidPosition()
-        {
-            return _position >= 0 && _position < _json.Length;
-        }
+        private bool IsValidPosition() { return _position.IsBetween(0, _json.Length); }
+
+        private char? CurrentToken() { if (IsValidPosition()) return _json[_position]; return null; }
 
         private char? NextToken()
         {
-            while (true)
+            while (IsValidPosition())
             {
-                if (!IsValidPosition()) break;
-
                 if (!Util.IsPassableToken(_json[_position]))
                     return _json[_position++];
 
                 _position++;
             }
-
             return null;
         }
 
         internal JsonObjectParser(string json) { _json = json; Clear(); }
+
+        private void Clear() { _position = 0; }
 
         internal JsonObject Parse()
         {
             JsonObject result = ParseValue();
             Clear();
             return result;
-        }
-
-        private void Clear()
-        {
-            _nameBuilder = new StringBuilder();
-            _position = 0;
         }
 
         private JsonObject ParseValue()
@@ -58,7 +49,6 @@ namespace Skein.Parser
                 case JsonType.String:
                     return ParseStringValue();
                 case JsonType.Integer:
-                    _position--;
                     return ParseNumberValue();
                 case JsonType.Array:
                     return ParseArray();
@@ -69,9 +59,6 @@ namespace Skein.Parser
 
         private JsonObject ParseObject()
         {
-            //if (_json[_position++] != Token.ObjectStart)
-            //    throw new JsonParseException("Object must start '{'!!!");
-
             JsonObject result = new JsonObject();
             result.DataType = JsonType.Object;
 
@@ -97,29 +84,19 @@ namespace Skein.Parser
 
         private JsonObject ParseStringValue()
         {
-            JsonObject result = new JsonObject();
-            result.DataType = JsonType.String;
-
+            JsonObject result = new JsonObject(JsonType.String);
             result.SetValue(ParseString());
-
             return result;
         }
 
         private JsonObject ParseNumberValue()
         {
-            JsonObject result = new JsonObject();            
+            JsonObject result = new JsonObject();
 
-            int startPos = _position;
+            int startPos = (--_position);
 
-            while (true)
-            {
-                _position++;
-
-                if (_json[_position] == ','
-                || _json[_position] == ']'
-                || _json[_position] == '}')
-                    break;
-            }
+            do      _position++;
+            while   (!Token.IsNumberEnd(_json[_position]));
 
             var numberStr = _json.Substring(startPos, _position - startPos);
             float resultNum;
@@ -151,22 +128,21 @@ namespace Skein.Parser
 
         private JsonObject ParseArray()
         {
-            JsonObject result = new JsonObject();
-            result.DataType = JsonType.Array;
+            JsonObject result = new JsonObject(JsonType.Array);
             int index = 0;
+            char? token = null;
+
             do
             {                
                 result.Append(index++, ParseValue());
+                token = CurrentToken();
+                if (token == Token.Comma)   token = NextToken();
+            } while (token != null && token != Token.ArrayEnd);
 
-                if (_json[_position] != Token.Comma || _json[_position] == Token.ArrayEnd)
-                {
-                    _position++;
-                    break;
-                }
-
-                _position++;
-
-            } while (true);
+            if(token == Token.ArrayEnd)
+                NextToken();
+            else
+                throw new JsonParseException("Array must end ']'!!!");
 
             return result;
         }
