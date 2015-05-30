@@ -60,7 +60,7 @@ namespace SkeinUnitTest
             foreach (string json in testCase)
             {
                 var obj = JsonReader.Parse(json);
-                Debug.WriteLine("Success:\{obj.ToLogString()}");
+                Debug.WriteLine("Success:{0}", obj.ToLogString());
             }
         }
     }

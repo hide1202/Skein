@@ -35,7 +35,7 @@ namespace Skein
         public void Append(object name, JsonObject data)
         {
             if (!TryAppend(name, data))
-                throw new JsonException(string.Format("Already this object contains \{name}"));
+                throw new JsonException(string.Format("Already this object contains {0}", name));
         }
 
         public bool TryAppend(object name, JsonObject data)
@@ -51,7 +51,7 @@ namespace Skein
         private static T Convert<T>(JsonObject data)
         {
             if (!(data._value is T))
-                throw new InvalidCastException(string.Format("This json's value is not \{typeof(T).Name}!!"));
+                throw new InvalidCastException(string.Format("This json's value is not {0}!!", typeof(T).Name));
             return (T)data._value;
         }
         #endregion

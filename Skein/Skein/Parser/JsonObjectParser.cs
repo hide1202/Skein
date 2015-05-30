@@ -53,7 +53,7 @@ namespace Skein.Parser
                 case JsonType.Array:
                     return ParseArray();
                 default:
-                    throw new NotSupportedException("This type is not supported!! [start:\{jsonType.ToString()}");
+                    throw new NotSupportedException(string.Format("This type is not supported!! [start:{0}", jsonType.ToString()));
             }
         }
 
@@ -164,7 +164,7 @@ namespace Skein.Parser
                 case Token.ArrayStart:
                     return JsonType.Array;
                 default:
-                    throw new NotSupportedException("This type is not supported!! [start:\{startToken}]");
+                    throw new NotSupportedException(string.Format("This type is not supported!! [start:{0}]", startToken));
             }
         }
     }
