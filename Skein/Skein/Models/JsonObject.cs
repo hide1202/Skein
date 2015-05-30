@@ -45,20 +45,27 @@ namespace Skein
         }
 
         #region Casting operator
-        public static explicit operator int (JsonObject data) { return Convert<int>(data); }
-        public static explicit operator double (JsonObject data) { return Convert<double>(data); }
-        public static explicit operator bool (JsonObject data) { return Convert<bool>(data); }
+        public static implicit operator int (JsonObject data) { return Convert<int>(data); }
+        public static implicit operator long (JsonObject data) { return Convert<long>(data); }
+        public static implicit operator double (JsonObject data) { return Convert<double>(data); }
+        public static implicit operator bool (JsonObject data) { return Convert<bool>(data); }
+        public static implicit operator string (JsonObject data) { return Convert<string>(data); }
         private static T Convert<T>(JsonObject data)
         {
+            if ((typeof(T) == typeof(long) && data._value is int) ||
+                (typeof(T) == typeof(int) && data._value is long))
+                    return (T)data._value;
+
             if (!(data._value is T))
                 throw new InvalidCastException(string.Format("This json's value is not {0}!!", typeof(T).Name));
             return (T)data._value;
         }
         #endregion
 
+#if DEBUG
         public string ToLogString()
         {
-#if DEBUG
+
             System.Text.StringBuilder log = new System.Text.StringBuilder();
             if (_value != null)
             {
@@ -75,9 +82,7 @@ namespace Skein
             }
 
             return log.ToString();
-#else
-            return string.Empty;
-#endif
         }
+#endif
     }
 }

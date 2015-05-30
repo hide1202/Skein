@@ -3,6 +3,7 @@ using Skein;
 using Skein.Exception;
 using System.Diagnostics;
 
+#if DEBUG
 namespace SkeinUnitTest
 {
     [TestClass]
@@ -26,12 +27,14 @@ namespace SkeinUnitTest
             @"{""callback"":""methodName"",""args"":[1,2,""arg""]}"
         };
 
+        private const string SERIALIZE_TEST_CASE = @"{""callback"":""methodName"",""args"":[1,2,""arg""]}";
+
         private string[] _invalidCase = new string[] {
             @"{""key"":""1234}",
         };
 
         [TestMethod]
-        public void ValidCaseTest()
+        public void DeserializeTest()
         {
             foreach (var testCase in _validCase)
                 try
@@ -53,7 +56,16 @@ namespace SkeinUnitTest
                 {
                     Debug.WriteLine(e.Message);
                 }
+        }
 
+        [TestMethod]
+        public void SerializeTest()
+        {
+            var obj = JsonReader.Parse(SERIALIZE_TEST_CASE);
+            Assert.AreEqual<string>(obj["callback"], "methodName");
+            Assert.AreEqual<int>(obj["args"][0], 1);
+            Assert.AreEqual<int>(obj["args"][1], 2);
+            Assert.AreEqual<string>(obj["args"][2], "arg");
         }
 
         public void ParseTest(params string[] testCase)
@@ -61,8 +73,9 @@ namespace SkeinUnitTest
             foreach (string json in testCase)
             {
                 var obj = JsonReader.Parse(json);
-                Debug.WriteLine("Success:{0}", obj.ToLogString());
+                Debug.WriteLine(string.Format("Success:{0}", obj.ToLogString()));
             }
         }
     }
 }
+#endif

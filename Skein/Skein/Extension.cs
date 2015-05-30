@@ -5,9 +5,9 @@ namespace Skein
 {
     internal static class Extension
     {
+#if DEBUG
         internal static string ToLog(this Dictionary<object, JsonObject> thisDic)
         {
-#if DEBUG
             StringBuilder builder = new StringBuilder();
 
             builder.Append("{");
@@ -19,10 +19,8 @@ namespace Skein
             }
             builder.Append("}");
             return builder.ToString();
-#else
-            return string.Empty;
-#endif
         }
+#endif
 
         /// <summary>
         /// int value contains min value, except for max value.
