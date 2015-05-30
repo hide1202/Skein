@@ -85,7 +85,7 @@ namespace Skein.Parser
         private JsonObject ParseStringValue()
         {
             JsonObject result = new JsonObject(JsonType.String);
-            result.SetValue(ParseString());
+            result.SetValue(JsonType.String, ParseString());
             return result;
         }
 

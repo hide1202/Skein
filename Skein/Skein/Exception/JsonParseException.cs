@@ -10,5 +10,6 @@ namespace Skein.Exception
     {
         public JsonParseException() : base() { }
         public JsonParseException(string message) : base(message) { }
+        public JsonParseException(string message, params object[] args) : base(message, args) { }
     }
 }

@@ -7,6 +7,7 @@ namespace Skein
     {
         internal static string ToLog(this Dictionary<object, JsonObject> thisDic)
         {
+#if DEBUG
             StringBuilder builder = new StringBuilder();
 
             builder.Append("{");
@@ -18,6 +19,9 @@ namespace Skein
             }
             builder.Append("}");
             return builder.ToString();
+#else
+            return string.Empty;
+#endif
         }
 
         /// <summary>

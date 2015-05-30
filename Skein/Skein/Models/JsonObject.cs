@@ -11,19 +11,25 @@ namespace Skein
         private object _value = null;
         #endregion
 
-        public JsonObject() { _data = new Dictionary<object, JsonObject>(); }
+        #region Constructor
+        public JsonObject() { _data = new Dictionary<object, JsonObject>(); DataType = JsonType.Null; }
         public JsonObject(JsonType dataType) : this() { DataType = dataType; }
-
-        public JsonType DataType { get; set; } = JsonType.Null;
-
-        #region Indexer
-        public JsonObject this[string key] { get { return _data[key]; } }
-        public JsonObject this[int index] { get { return _data[index]; } }
         #endregion
 
-        public void SetValue(object data)
+        #region Properties
+        public JsonType DataType { get; set; }
+        #endregion
+
+        #region Indexer
+        public JsonObject this[string key] { get { return GetValue(key); } }
+        public JsonObject this[int index] { get { return GetValue(index); } }
+        #endregion
+
+        private JsonObject GetValue(object key)
         {
-            _value = data;
+            if (!_data.ContainsKey(key))
+                throw new JsonException("This object doesn't contain '{0}'", key);
+            return _data[key];
         }
 
         public void SetValue(JsonType type, object data)
@@ -32,16 +38,10 @@ namespace Skein
             _value = data;
         }
 
-        public void Append(object name, JsonObject data)
+        public bool Append(object name, JsonObject data)
         {
-            if (!TryAppend(name, data))
-                throw new JsonException(string.Format("Already this object contains {0}", name));
-        }
-
-        public bool TryAppend(object name, JsonObject data)
-        {
-            if (_data.ContainsKey(name))    return false;
-            _data.Add(name, data);          return true;
+            if (_data.ContainsKey(name)) return false;
+            _data.Add(name, data); return true;
         }
 
         #region Casting operator
@@ -57,7 +57,8 @@ namespace Skein
         #endregion
 
         public string ToLogString()
-        {            
+        {
+#if DEBUG
             System.Text.StringBuilder log = new System.Text.StringBuilder();
             if (_value != null)
             {
@@ -74,6 +75,9 @@ namespace Skein
             }
 
             return log.ToString();
+#else
+            return string.Empty;
+#endif
         }
     }
 }

@@ -23,6 +23,7 @@ namespace SkeinUnitTest
             @"{""key"":{""value"":""innerValue""},""key2"":{""value2"":""innerValue2""}}",
             @"{""key"":[1,2,3,4,5] }",
             @"{""key"":[1,2,""value"",{""key2"":[1,2,""value2""]},5] }",
+            @"{""callback"":""methodName"",""args"":[1,2,""arg""]}"
         };
 
         private string[] _invalidCase = new string[] {
